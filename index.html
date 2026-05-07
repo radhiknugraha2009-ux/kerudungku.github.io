@@ -1,0 +1,2617 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KerudungKu - Toko Kerudung Online</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #e63946;
+      --primary-dark: #c1121f;
+      --bg: #f8f9fa;
+      --card: #ffffff;
+      --text: #212529;
+      --muted: #6c757d;
+      --border: #dee2e6;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .nav-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--text); }
+    .nav-search {
+      flex: 1;
+      max-width: 420px;
+      display: flex;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .nav-search input {
+      flex: 1;
+      padding: 8px 14px;
+      border: none;
+      outline: none;
+      font-size: 0.9rem;
+    }
+    .nav-search button {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+
+    /* ── AUTH BUTTONS ── */
+    .btn-masuk {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .btn-masuk:hover { background: var(--primary); color: #fff; }
+    .btn-daftar {
+      background: var(--primary);
+      border: 1.5px solid var(--primary);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn-daftar:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+    /* ── USER MENU (setelah login) ── */
+    .user-menu {
+      position: relative;
+      display: none;
+    }
+    .user-menu.show { display: block; }
+    .user-avatar {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 180px;
+      overflow: hidden;
+      z-index: 150;
+    }
+    .user-dropdown.open { display: block; }
+    .user-dropdown-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .user-dropdown-header .uname { font-weight: 700; font-size: 0.9rem; }
+    .user-dropdown-header .uemail { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .user-dropdown a, .user-dropdown button.dd-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      font-size: 0.88rem;
+      color: var(--text);
+      text-decoration: none;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .user-dropdown a:hover, .user-dropdown button.dd-item:hover { background: var(--bg); }
+    .user-dropdown .dd-logout { color: var(--primary); }
+
+    .cart-btn {
+      position: relative;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .cart-btn:hover { background: var(--primary-dark); }
+    .cart-badge {
+      background: #fff;
+      color: var(--primary);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+      color: #fff;
+      text-align: center;
+      padding: 64px 24px;
+    }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; margin-bottom: 12px; }
+    .hero p { font-size: 1.05rem; opacity: 0.9; margin-bottom: 28px; }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+
+    /* ── CATEGORY FILTER BUTTONS ── */
+    .cat-btn {
+      padding: 7px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      background: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .cat-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .cat-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      max-width: 1300px;
+      margin: 32px auto 0;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .filter-bar h2 { font-size: 1.2rem; font-weight: 700; }
+    .filter-bar span { color: var(--muted); font-size: 0.9rem; }
+    .sort-select {
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── PRODUCT GRID ── */
+    .products {
+      max-width: 1300px;
+      margin: 20px auto 60px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.13);
+    }
+    .card-img {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #f0f0f0;
+    }
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+    .card:hover .card-img img { transform: scale(1.07); }
+    .badge-new {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .badge-sale {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #f4a261;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .wishlist-btn:hover { transform: scale(1.15); }
+    .wishlist-btn.active { color: var(--primary); }
+
+    .card-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .card-category {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .card-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .card-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      color: #f4a261;
+    }
+    .card-rating span { color: var(--muted); }
+    .card-price {
+      margin-top: auto;
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .price-main {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .price-old {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+    .add-to-cart {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .add-to-cart:hover { background: var(--primary-dark); transform: scale(1.04); }
+
+    /* ── CART SIDEBAR ── */
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 200;
+    }
+    .cart-overlay.open { display: block; }
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      background: #fff;
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s ease;
+      box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+    }
+    .cart-sidebar.open { right: 0; }
+    .cart-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .cart-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .cart-empty {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 60px;
+      font-size: 0.95rem;
+    }
+    .cart-empty .icon { font-size: 3rem; margin-bottom: 12px; }
+    .cart-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .cart-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #f0f0f0;
+    }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
+    .cart-item-price { font-size: 0.85rem; color: var(--primary); font-weight: 700; }
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .qty-btn:hover { background: var(--bg); }
+    .qty-num { font-size: 0.9rem; font-weight: 600; min-width: 20px; text-align: center; }
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+    }
+    .cart-item-remove:hover { color: var(--primary); }
+    .cart-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .checkout-btn {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .checkout-btn:hover { background: var(--primary-dark); }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #212529;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #212529;
+      color: #adb5bd;
+      text-align: center;
+      padding: 32px 24px;
+      font-size: 0.85rem;
+    }
+    footer strong { color: #fff; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 400;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      overflow: hidden;
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 1.3rem; font-weight: 800; }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .modal-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin: 20px 28px 0;
+    }
+    .modal-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .modal-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .modal-body { padding: 24px 28px 28px; }
+    .modal-form { display: none; flex-direction: column; gap: 16px; }
+    .modal-form.active { display: flex; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .form-group input {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--primary); }
+    .form-group input.error { border-color: #e63946; }
+    .form-error { font-size: 0.78rem; color: var(--primary); display: none; }
+    .form-error.show { display: block; }
+    .form-submit {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+    .form-submit:hover { background: var(--primary-dark); }
+    .form-divider {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin: 4px 0;
+    }
+    .form-divider a {
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .form-divider a:hover { text-decoration: underline; }
+    .form-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    .form-check input { margin-top: 2px; accent-color: var(--primary); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.6rem; }
+      .nav-search { display: none; }
+      .btn-masuk, .btn-daftar { padding: 7px 10px; font-size: 0.8rem; }
+    }
+
+    /* ── HAMBURGER ── */
+    .hamburger {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 6px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .hamburger:hover { background: var(--bg); }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2.5px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ── SIDEBAR MENU ── */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 300;
+    }
+    .sidebar-overlay.open { display: block; }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -300px;
+      width: 280px;
+      height: 100%;
+      background: #fff;
+      z-index: 301;
+      display: flex;
+      flex-direction: column;
+      transition: left 0.3s ease;
+      box-shadow: 4px 0 30px rgba(0,0,0,0.12);
+    }
+    .sidebar.open { left: 0; }
+    .sidebar-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .sidebar-logo span { color: var(--text); }
+    .sidebar-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 0;
+      overflow-y: auto;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: #fff5f5; color: var(--primary); }
+    .sidebar-item .si-icon { font-size: 1.2rem; width: 28px; text-align: center; }
+    .sidebar-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 20px;
+    }
+    .sidebar-section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 10px 20px 4px;
+    }
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── MODAL HALAMAN (Tentang, Promo, dll) ── */
+    .page-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 400;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .page-modal-overlay.open { display: flex; }
+    .page-modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+      animation: modalIn 0.25s ease;
+    }
+    .page-modal-header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    .page-modal-header h2 { font-size: 1.15rem; font-weight: 800; }
+    .page-modal-body { padding: 24px; }
+    .about-highlight {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      background: #fff5f5;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+    .about-highlight .ah-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .about-highlight .ah-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+    .about-highlight .ah-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .promo-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .promo-badge-big {
+      background: var(--primary);
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-align: center;
+      min-width: 60px;
+      flex-shrink: 0;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+    }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+    .faq-a { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-row .cr-icon { font-size: 1.3rem; width: 32px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-inner">
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <a class="logo" href="#">Kerudung<span>Ku</span></a>
+    <div class="nav-search">
+      <input type="text" placeholder="Cari produk..." id="searchInput" />
+      <button>🔍</button>
+    </div>
+    <div class="nav-actions">
+      <!-- Tombol auth (tampil saat belum login) -->
+      <div id="authButtons" style="display:flex;gap:8px;">
+        <button class="btn-masuk" id="btnMasuk">Masuk</button>
+        <button class="btn-daftar" id="btnDaftar">Daftar</button>
+      </div>
+      <!-- User menu (tampil setelah login) -->
+      <div class="user-menu" id="userMenu">
+        <button class="user-avatar" id="userAvatar">U</button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="uname" id="ddName">Nama User</div>
+            <div class="uemail" id="ddEmail">email@contoh.com</div>
+          </div>
+          <a href="#">👤 Profil Saya</a>
+          <a href="#">📦 Pesanan Saya</a>
+          <a href="#">❤️ Wishlist</a>
+          <button class="dd-item dd-logout" id="btnLogout">🚪 Keluar</button>
+        </div>
+      </div>
+      <button class="cart-btn" id="cartBtn">
+        🛒 Keranjang
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Kerudung Cantik, Harga Terbaik 🧕</h1>
+  <p>Koleksi kerudung premium pilihan — elegan, nyaman, dan syar'i</p>
+  <span class="hero-badge">✦ GRATIS ONGKIR MIN. PEMBELIAN Rp 150.000</span>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <div>
+    <h2>Semua Produk</h2>
+    <span id="productCount">12 produk</span>
+  </div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <div id="categoryFilters" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="cat-btn active" onclick="filterCategory('semua', this)">Semua</button>
+      <button class="cat-btn" onclick="filterCategory('Voal', this)">Voal</button>
+      <button class="cat-btn" onclick="filterCategory('Pashmina', this)">Pashmina</button>
+      <button class="cat-btn" onclick="filterCategory('Segi Empat', this)">Segi Empat</button>
+      <button class="cat-btn" onclick="filterCategory('Instan', this)">Instan</button>
+    </div>
+    <select class="sort-select" id="sortSelect">
+      <option value="default">Urutkan: Default</option>
+      <option value="price-asc">Harga: Terendah</option>
+      <option value="price-desc">Harga: Tertinggi</option>
+      <option value="name-asc">Nama: A–Z</option>
+    </select>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="products" id="productGrid"></div>
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay"></div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>🛒 Keranjang Belanja</h3>
+    <button class="cart-close" id="cartClose">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="icon">🛍️</div>
+      <p>Keranjang masih kosong</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cartTotal">Rp 0</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn">Checkout Sekarang →</button>
+  </div>
+</div>
+
+<!-- MODAL AUTH -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <h2 id="modalTitle">Masuk</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" id="tabMasuk" onclick="switchTab('masuk')">Masuk</button>
+      <button class="modal-tab" id="tabDaftar" onclick="switchTab('daftar')">Daftar</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- FORM MASUK -->
+      <form class="modal-form active" id="formMasuk" onsubmit="handleMasuk(event)">
+        <div class="form-group">
+          <label for="loginEmail">Email atau Username</label>
+          <input type="text" id="loginEmail" placeholder="email@contoh.com atau username" />
+          <span class="form-error" id="loginEmailErr">Email atau username tidak valid</span>
+        </div>
+        <div class="form-group">
+          <label for="loginPass">Kata Sandi</label>
+          <input type="password" id="loginPass" placeholder="Masukkan kata sandi" />
+          <span class="form-error" id="loginPassErr">Kata sandi minimal 6 karakter</span>
+        </div>
+        <div class="form-divider" style="text-align:right; margin:0">
+          <a href="#">Lupa kata sandi?</a>
+        </div>
+        <button type="submit" class="form-submit">Masuk Sekarang</button>
+        <div class="form-divider">
+          Belum punya akun? <a onclick="switchTab('daftar')">Daftar di sini</a>
+        </div>
+      </form>
+
+      <!-- FORM DAFTAR -->
+      <form class="modal-form" id="formDaftar" onsubmit="handleDaftar(event)">
+        <div class="form-group">
+          <label for="regName">Nama Lengkap</label>
+          <input type="text" id="regName" placeholder="Nama kamu" />
+          <span class="form-error" id="regNameErr">Nama tidak boleh kosong</span>
+        </div>
+        <div class="form-group">
+          <label for="regUsername">Username</label>
+          <input type="text" id="regUsername" placeholder="username (tanpa spasi)" />
+          <span class="form-error" id="regUsernameErr">Username tidak boleh kosong</span>
+        </div>
+        <div class="form-group">
+          <label for="regEmail">Email</label>
+          <input type="email" id="regEmail" placeholder="email@contoh.com" />
+          <span class="form-error" id="regEmailErr">Email tidak valid</span>
+        </div>
+        <div class="form-group">
+          <label for="regPass">Kata Sandi</label>
+          <input type="password" id="regPass" placeholder="Min. 6 karakter" />
+          <span class="form-error" id="regPassErr">Kata sandi minimal 6 karakter</span>
+        </div>
+        <div class="form-group">
+          <label for="regPass2">Konfirmasi Kata Sandi</label>
+          <input type="password" id="regPass2" placeholder="Ulangi kata sandi" />
+          <span class="form-error" id="regPass2Err">Kata sandi tidak cocok</span>
+        </div>
+        <div class="form-check">
+          <input type="checkbox" id="regAgree" />
+          <label for="regAgree">Saya setuju dengan <a href="#" style="color:var(--primary)">Syarat & Ketentuan</a></label>
+        </div>
+        <span class="form-error" id="regAgreeErr">Harap setujui syarat & ketentuan</span>
+        <button type="submit" class="form-submit">Buat Akun</button>
+        <div class="form-divider">
+          Sudah punya akun? <a onclick="switchTab('masuk')">Masuk di sini</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL PRODUK -->
+<div class="modal-overlay" id="productModalOverlay">
+  <div class="modal" id="productModalBox" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header" style="position:sticky;top:0;background:#fff;z-index:10;border-bottom:1px solid var(--border);padding-bottom:16px;">
+      <h2 id="pmTitle" style="font-size:1.1rem;line-height:1.4;padding-right:12px;"></h2>
+      <button class="modal-close" id="productModalClose">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px 28px 28px;">
+
+      <!-- Gambar + Info Harga -->
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+        <img id="pmImg" src="" alt="" style="width:160px;height:160px;object-fit:cover;border-radius:12px;background:#f0f0f0;flex-shrink:0;" />
+        <div style="flex:1;min-width:160px;">
+          <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;" id="pmCategory"></div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;" id="pmRatingRow"></div>
+          <div style="font-size:1.4rem;font-weight:800;color:var(--primary);" id="pmPrice"></div>
+          <div style="font-size:0.85rem;color:var(--muted);text-decoration:line-through;margin-bottom:12px;" id="pmOldPrice"></div>
+          <button class="add-to-cart" style="width:100%;padding:12px;" id="pmAddCart">+ Tambah ke Keranjang</button>
+          <button class="add-to-cart" style="width:100%;padding:12px;margin-top:8px;background:#2a9d8f;" id="pmBuyNow">⚡ Beli Langsung</button>
+        </div>
+      </div>
+
+      <!-- Deskripsi -->
+      <div style="margin-top:24px;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--border);">📋 Deskripsi Produk</h3>
+        <p id="pmDesc" style="font-size:0.88rem;line-height:1.7;color:#444;white-space:pre-line;"></p>
+      </div>
+
+      <!-- Spesifikasi -->
+      <div style="margin-top:20px;" id="pmSpecWrap">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--border);">📐 Spesifikasi</h3>
+        <table id="pmSpec" style="width:100%;font-size:0.85rem;border-collapse:collapse;"></table>
+      </div>
+
+      <!-- Ulasan -->
+      <div style="margin-top:24px;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--border);">⭐ Ulasan Pembeli</h3>
+
+        <!-- Daftar ulasan -->
+        <div id="pmReviewList" style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;"></div>
+
+        <!-- Form tulis ulasan -->
+        <div style="background:var(--bg);border-radius:12px;padding:16px;">
+          <div style="font-size:0.9rem;font-weight:700;margin-bottom:12px;">✍️ Tulis Ulasan Kamu</div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:6px;">Rating</label>
+            <div id="starPicker" style="display:flex;gap:4px;font-size:1.6rem;cursor:pointer;">
+              <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:6px;">Nama</label>
+            <input id="reviewName" type="text" placeholder="Nama kamu" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;outline:none;" />
+          </div>
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.82rem;font-weight:600;display:block;margin-bottom:6px;">Komentar</label>
+            <textarea id="reviewText" rows="3" placeholder="Bagaimana pendapat kamu tentang produk ini?" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;outline:none;resize:vertical;font-family:inherit;"></textarea>
+          </div>
+          <button onclick="submitReview()" style="background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:8px;font-size:0.88rem;font-weight:700;cursor:pointer;width:100%;">Kirim Ulasan</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a class="sidebar-logo" href="#">Kerudung<span>Ku</span></a>
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-label">Menu Utama</div>
+    <button class="sidebar-item" onclick="closeSidebar();scrollToTop()">
+      <span class="si-icon">🏠</span> Home
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('tentang')">
+      <span class="si-icon">💡</span> Tentang Kami
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('promo')">
+      <span class="si-icon">🎁</span> Promo & Diskon
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('panduan')">
+      <span class="si-icon">📖</span> Panduan Ukuran
+    </button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Informasi</div>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('faq')">
+      <span class="si-icon">❓</span> FAQ
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('kontak')">
+      <span class="si-icon">📞</span> Hubungi Kami
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openPageModal('kebijakan')">
+      <span class="si-icon">🔒</span> Kebijakan & Privasi
+    </button>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Kategori Produk</div>
+    <button class="sidebar-item" onclick="closeSidebar();filterCategory('semua', document.querySelector('.cat-btn'))">
+      <span class="si-icon">🧕</span> Semua Produk
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();filterCategoryByName('Voal')">
+      <span class="si-icon">🌸</span> Voal
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();filterCategoryByName('Pashmina')">
+      <span class="si-icon">🧣</span> Pashmina
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();filterCategoryByName('Segi Empat')">
+      <span class="si-icon">⬛</span> Segi Empat
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();filterCategoryByName('Instan')">
+      <span class="si-icon">⚡</span> Instan
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    © 2026 KerudungKu · Semua hak dilindungi
+  </div>
+</div>
+
+<!-- MODAL TENTANG KAMI -->
+<div class="page-modal-overlay" id="modalTentang">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>💡 Tentang Kami</h2>
+      <button class="modal-close" onclick="closePageModal('tentang')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <p style="font-size:0.9rem;line-height:1.7;color:#444;margin-bottom:20px;">
+        <strong>KerudungKu</strong> lahir dari kecintaan kami terhadap fashion muslimah Indonesia. Kami percaya setiap wanita berhak tampil cantik, nyaman, dan percaya diri — tanpa harus merogoh kocek dalam-dalam.
+      </p>
+      <p style="font-size:0.9rem;line-height:1.7;color:#444;margin-bottom:24px;">
+        Berawal dari keresahan sulitnya menemukan hijab berkualitas dengan harga terjangkau di satu tempat, kami hadir sebagai solusi belanja hijab online yang mudah, terpercaya, dan lengkap.
+      </p>
+
+      <h3 style="font-size:1rem;font-weight:800;margin-bottom:14px;">🌟 Mengapa Kami Hadir?</h3>
+      <div class="about-highlight">
+        <div class="ah-icon">😔</div>
+        <div>
+          <div class="ah-title">Susah Cari Hijab Berkualitas</div>
+          <div class="ah-desc">Banyak toko menjual hijab dengan kualitas tidak konsisten. Kami hadir dengan kurasi produk terbaik yang sudah diseleksi ketat.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">💸</div>
+        <div>
+          <div class="ah-title">Harga Tidak Bersahabat</div>
+          <div class="ah-desc">Hijab premium seharusnya bisa dijangkau semua kalangan. Kami memotong rantai distribusi agar harga lebih hemat langsung ke tangan kamu.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🔍</div>
+        <div>
+          <div class="ah-title">Pilihan Terbatas di Satu Tempat</div>
+          <div class="ah-desc">Dari voal, pashmina, segi empat, hingga instan — semua tersedia lengkap di KerudungKu tanpa perlu berpindah toko.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1rem;font-weight:800;margin:24px 0 14px;">🏆 Keunggulan KerudungKu</h3>
+      <div class="about-highlight">
+        <div class="ah-icon">✅</div>
+        <div>
+          <div class="ah-title">Produk Terseleksi & Berkualitas</div>
+          <div class="ah-desc">Setiap produk melewati seleksi kualitas ketat — bahan premium, jahitan rapi, dan warna sesuai foto.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🚚</div>
+        <div>
+          <div class="ah-title">Gratis Ongkir Min. Rp 150.000</div>
+          <div class="ah-desc">Belanja lebih hemat dengan gratis ongkos kirim ke seluruh Indonesia untuk pembelian minimal Rp 150.000.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🔄</div>
+        <div>
+          <div class="ah-title">Garansi Pengembalian Barang</div>
+          <div class="ah-desc">Tidak puas? Kami jamin pengembalian barang mudah dan cepat tanpa ribet dalam 7 hari setelah terima.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">💬</div>
+        <div>
+          <div class="ah-title">Layanan Pelanggan Responsif</div>
+          <div class="ah-desc">Tim kami siap membantu 7 hari seminggu via WhatsApp, chat, dan email untuk memastikan pengalaman belanja terbaik.</div>
+        </div>
+      </div>
+      <div class="about-highlight">
+        <div class="ah-icon">🌈</div>
+        <div>
+          <div class="ah-title">Koleksi Warna Terlengkap</div>
+          <div class="ah-desc">Ratusan pilihan warna dan motif terbaru mengikuti tren fashion muslimah Indonesia dan dunia.</div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,#e63946,#c1121f);border-radius:12px;padding:20px;text-align:center;margin-top:24px;color:#fff;">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🧕</div>
+        <div style="font-weight:800;font-size:1rem;margin-bottom:6px;">Bergabung dengan 10.000+ Pelanggan Puas</div>
+        <div style="font-size:0.82rem;opacity:0.9;">Kepercayaan kamu adalah prioritas utama kami</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROMO -->
+<div class="page-modal-overlay" id="modalPromo">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>🎁 Promo & Diskon</h2>
+      <button class="modal-close" onclick="closePageModal('promo')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Promo spesial yang sedang berlaku untuk kamu!</p>
+      <div class="promo-card">
+        <div class="promo-badge-big">🚚<br>FREE</div>
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">Gratis Ongkir</div>
+          <div style="font-size:0.83rem;color:var(--muted);line-height:1.5;">Gratis ongkos kirim ke seluruh Indonesia untuk pembelian minimal <strong>Rp 150.000</strong>. Berlaku setiap hari!</div>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-badge-big" style="background:#f4a261;">SALE<br>30%</div>
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">Diskon Akhir Pekan</div>
+          <div style="font-size:0.83rem;color:var(--muted);line-height:1.5;">Dapatkan diskon hingga <strong>30%</strong> untuk produk bertanda SALE setiap Sabtu & Minggu.</div>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-badge-big" style="background:#2a9d8f;">BELI<br>3+1</div>
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">Beli 3 Gratis 1</div>
+          <div style="font-size:0.83rem;color:var(--muted);line-height:1.5;">Beli 3 produk kategori yang sama, gratis 1 produk dengan harga terendah. Berlaku untuk semua kategori!</div>
+        </div>
+      </div>
+      <div class="promo-card">
+        <div class="promo-badge-big" style="background:#457b9d;">NEW<br>10%</div>
+        <div>
+          <div style="font-weight:700;font-size:0.95rem;margin-bottom:4px;">Diskon Member Baru</div>
+          <div style="font-size:0.83rem;color:var(--muted);line-height:1.5;">Daftar akun baru dan dapatkan <strong>diskon 10%</strong> untuk pembelian pertama kamu. Kode: <strong>NEWMEMBER</strong></div>
+        </div>
+      </div>
+      <div style="background:#fff5f5;border-radius:10px;padding:14px;font-size:0.8rem;color:var(--muted);text-align:center;margin-top:8px;">
+        ⏰ Promo dapat berubah sewaktu-waktu. Hubungi kami untuk info promo terbaru.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PANDUAN UKURAN -->
+<div class="page-modal-overlay" id="modalPanduan">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>📖 Panduan Ukuran Hijab</h2>
+      <button class="modal-close" onclick="closePageModal('panduan')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Panduan memilih ukuran hijab yang tepat sesuai kebutuhan kamu.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:0.85rem;margin-bottom:20px;">
+        <thead>
+          <tr style="background:var(--primary);color:#fff;">
+            <th style="padding:10px 12px;text-align:left;border-radius:8px 0 0 0;">Jenis Hijab</th>
+            <th style="padding:10px 12px;text-align:left;">Ukuran Standar</th>
+            <th style="padding:10px 12px;text-align:left;border-radius:0 8px 0 0;">Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background:#fff5f5;">
+            <td style="padding:10px 12px;font-weight:600;">Pashmina</td>
+            <td style="padding:10px 12px;">175–200 × 75 cm</td>
+            <td style="padding:10px 12px;color:var(--muted);">Panjang & lebar ideal</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-weight:600;">Segi Empat</td>
+            <td style="padding:10px 12px;">110–115 × 110–115 cm</td>
+            <td style="padding:10px 12px;color:var(--muted);">Ukuran standar harian</td>
+          </tr>
+          <tr style="background:#fff5f5;">
+            <td style="padding:10px 12px;font-weight:600;">Voal Syari</td>
+            <td style="padding:10px 12px;">130 × 130 cm</td>
+            <td style="padding:10px 12px;color:var(--muted);">Jumbo, menutup sempurna</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 12px;font-weight:600;">Instan / Bergo</td>
+            <td style="padding:10px 12px;">All size</td>
+            <td style="padding:10px 12px;color:var(--muted);">Muat semua ukuran kepala</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="about-highlight">
+        <div class="ah-icon">💡</div>
+        <div>
+          <div class="ah-title">Tips Memilih Hijab</div>
+          <div class="ah-desc">Untuk wajah bulat, pilih pashmina atau segi empat berukuran lebih besar agar tampilan lebih proporsional. Untuk aktivitas aktif, pilih bahan jersey atau instan yang tidak mudah geser.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FAQ -->
+<div class="page-modal-overlay" id="modalFaq">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>❓ FAQ</h2>
+      <button class="modal-close" onclick="closePageModal('faq')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <div class="faq-item">
+        <div class="faq-q">Berapa lama pengiriman ke seluruh Indonesia?</div>
+        <div class="faq-a">Pengiriman reguler 2–5 hari kerja. Pengiriman ekspres 1–2 hari kerja. Kami bekerja sama dengan JNE, J&T, SiCepat, dan Anteraja.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apakah bisa retur atau tukar barang?</div>
+        <div class="faq-a">Ya, kami menerima retur dalam 7 hari setelah barang diterima, selama produk belum dipakai dan masih dalam kondisi original. Hubungi CS kami untuk proses retur.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apakah warna produk sesuai dengan foto?</div>
+        <div class="faq-a">Kami berusaha menampilkan foto seakurat mungkin. Namun sedikit perbedaan warna bisa terjadi karena perbedaan layar monitor. Jika ada ketidaksesuaian signifikan, kami siap membantu.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Bagaimana cara merawat hijab agar awet?</div>
+        <div class="faq-a">Cuci dengan tangan atau mesin mode halus, air dingin. Jangan diperas terlalu kuat. Jemur di tempat teduh. Setrika dengan suhu rendah atau gunakan kain pelapis.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Apakah tersedia pembelian grosir?</div>
+        <div class="faq-a">Ya! Kami melayani pembelian grosir dengan harga spesial mulai dari pembelian 12 pcs. Hubungi kami via WhatsApp untuk info harga grosir.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Metode pembayaran apa saja yang tersedia?</div>
+        <div class="faq-a">Transfer bank (BCA, Mandiri, BNI, BRI), dompet digital (GoPay, OVO, Dana, ShopeePay), kartu kredit/debit, dan COD untuk area tertentu.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONTAK -->
+<div class="page-modal-overlay" id="modalKontak">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>📞 Hubungi Kami</h2>
+      <button class="modal-close" onclick="closePageModal('kontak')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Kami siap membantu kamu 7 hari seminggu, pukul 08.00–21.00 WIB.</p>
+      <div class="contact-row">
+        <div class="cr-icon">💬</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;">WhatsApp</div>
+          <div style="font-size:0.83rem;color:var(--muted);">+62 812-3456-7890 (Respon cepat)</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="cr-icon">📧</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;">Email</div>
+          <div style="font-size:0.83rem;color:var(--muted);">cs@kerudungku.id</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="cr-icon">📸</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;">Instagram</div>
+          <div style="font-size:0.83rem;color:var(--muted);">@kerudungku.official</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="cr-icon">🎵</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;">TikTok</div>
+          <div style="font-size:0.83rem;color:var(--muted);">@kerudungku</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="cr-icon">📍</div>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;">Alamat</div>
+          <div style="font-size:0.83rem;color:var(--muted);">Jl. Fashion Muslimah No. 88, Bandung, Jawa Barat 40123</div>
+        </div>
+      </div>
+      <div style="background:linear-gradient(135deg,#e63946,#c1121f);border-radius:12px;padding:16px;text-align:center;margin-top:20px;color:#fff;">
+        <div style="font-size:1.2rem;margin-bottom:6px;">💬</div>
+        <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">Chat Langsung via WhatsApp</div>
+        <div style="font-size:0.8rem;opacity:0.9;">Klik tombol di bawah untuk chat langsung dengan tim kami</div>
+        <button onclick="showToast('Membuka WhatsApp... 💬')" style="margin-top:12px;background:#fff;color:var(--primary);border:none;padding:9px 20px;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;">Buka WhatsApp →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KEBIJAKAN -->
+<div class="page-modal-overlay" id="modalKebijakan">
+  <div class="page-modal">
+    <div class="page-modal-header">
+      <h2>🔒 Kebijakan & Privasi</h2>
+      <button class="modal-close" onclick="closePageModal('kebijakan')">✕</button>
+    </div>
+    <div class="page-modal-body">
+      <div style="font-size:0.88rem;line-height:1.8;color:#444;">
+        <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:8px;">Kebijakan Privasi</h3>
+        <p style="margin-bottom:14px;">KerudungKu berkomitmen menjaga privasi dan keamanan data pribadi pelanggan. Data yang kamu berikan hanya digunakan untuk keperluan transaksi dan tidak akan dibagikan kepada pihak ketiga tanpa persetujuan kamu.</p>
+        <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:8px;">Kebijakan Pengembalian</h3>
+        <p style="margin-bottom:14px;">Pengembalian barang diterima dalam 7 hari setelah produk diterima, dengan syarat produk belum dipakai, tag masih terpasang, dan dalam kondisi original. Biaya pengiriman retur ditanggung pembeli kecuali ada kesalahan dari pihak kami.</p>
+        <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:8px;">Syarat & Ketentuan</h3>
+        <p style="margin-bottom:14px;">Dengan melakukan pembelian di KerudungKu, kamu menyetujui syarat dan ketentuan yang berlaku. Kami berhak mengubah harga, stok, dan promo sewaktu-waktu tanpa pemberitahuan sebelumnya.</p>
+        <h3 style="font-size:0.95rem;font-weight:800;margin-bottom:8px;">Keamanan Transaksi</h3>
+        <p>Semua transaksi dilindungi dengan enkripsi SSL. Kami tidak menyimpan data kartu kredit/debit kamu. Pembayaran diproses melalui gateway pembayaran terpercaya dan berlisensi.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT -->
+<div class="modal-overlay" id="checkoutModal" style="z-index:500;align-items:flex-start;overflow-y:auto;padding:20px;">
+  <div class="modal" style="max-width:600px;width:100%;margin:auto;max-height:none;overflow:visible;">
+    <div style="background:var(--primary);padding:16px 24px;border-radius:16px 16px 0 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="color:#fff;font-weight:800;font-size:1rem;">🛍️ Checkout</span>
+        <button onclick="closeCheckoutModal()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;" id="checkoutProgress"></div>
+    </div>
+    <div id="checkoutContent" style="padding:24px;"></div>
+    <div style="padding:0 24px 24px;display:flex;gap:10px;justify-content:space-between;" id="checkoutNav"></div>
+  </div>
+</div>
+
+<!-- MODAL SUKSES ORDER -->
+<div class="modal-overlay" id="orderSuccessModal" style="z-index:600;">
+  <div class="modal" style="max-width:420px;text-align:center;">
+    <div style="padding:40px 32px;">
+      <div style="font-size:4rem;margin-bottom:16px;">🎉</div>
+      <h2 style="font-size:1.4rem;font-weight:800;margin-bottom:8px;color:var(--primary);">Pesanan Berhasil!</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:16px;">Terima kasih telah berbelanja di KerudungKu</p>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:20px;">
+        <div style="font-size:0.8rem;color:var(--muted);margin-bottom:4px;">Nomor Pesanan</div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--primary);" id="orderNumber">KK-20260101-0001</div>
+      </div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:24px;">Pesanan kamu sedang diproses. Kami akan mengirimkan konfirmasi segera.</p>
+      <button onclick="closeOrderSuccess()" style="background:var(--primary);color:#fff;border:none;padding:12px 32px;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;width:100%;">Selesai</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>KerudungKu</strong> &mdash; Toko Kerudung Online Terpercaya</p>
+  <p style="margin-top:8px">© 2026 KerudungKu. Semua hak dilindungi. | 14 Produk Tersedia</p>
+</footer>
+
+<script>
+  // ── DATA PRODUK ──
+  const products = [
+    {
+      id: 1, img: 'Hijab Pasmina Ceruty Babydol Polos.jpg', name: 'Hijab Pasmina Ceruty Babydol Polos',
+      category: 'Pashmina', price: 39000, oldPrice: 55000, rating: 4.7, reviews: 156, badge: 'sale',
+      desc: 'Pashmina Ceruty Babydoll Polos hadir dengan bahan ceruty premium Grade A yang lembut, ringan, dan jatuh sempurna di tubuh. Cocok untuk aktivitas harian, kuliah, kerja, maupun acara santai.\n\nBahan ceruty babydoll dikenal tidak mudah kusut dan nyaman dipakai seharian. Tersedia dalam berbagai pilihan warna yang trendi dan elegan.',
+      spec: [['Bahan','Ceruty Babydoll Grade A'],['Ukuran','180 x 75 cm'],['Teknik Jahit','Jahit tepi rapi'],['Cocok untuk','Harian, kuliah, kerja']]
+    },
+    {
+      id: 2, img: 'Hijab SegiEmpat Satin Silk.jpeg', name: 'Hijab SegiEmpat Satin Silk',
+      category: 'Segi Empat', price: 75000, oldPrice: 95000, rating: 4.8, reviews: 203, badge: 'sale',
+      desc: 'Hijab Segi Empat Satin Silk menghadirkan tampilan mewah dan elegan dengan kilap satin yang lembut. Bahan satin silk terasa dingin di kulit, tidak panas, dan sangat nyaman dipakai sepanjang hari.\n\nSangat cocok untuk acara formal, kondangan, wisuda, maupun tampilan sehari-hari yang ingin terlihat lebih berkelas.',
+      spec: [['Bahan','Satin Silk Premium'],['Ukuran','115 x 115 cm'],['Finishing','Lasercut / Neci'],['Cocok untuk','Formal, kondangan, wisuda']]
+    },
+    {
+      id: 3, img: 'Hijab Segi Empat Satin Polos.jpeg', name: 'Hijab Segi Empat Satin Polos',
+      category: 'Segi Empat', price: 55000, oldPrice: 72000, rating: 4.5, reviews: 201, badge: 'sale',
+      desc: 'Hijab Segi Empat Satin Polos adalah pilihan tepat untuk tampilan simpel namun tetap stylish. Bahan satin yang halus memberikan kesan rapi dan bersih, cocok dipadukan dengan berbagai outfit.\n\nTekstur satin yang tidak terlalu mengkilap membuatnya fleksibel untuk dipakai di berbagai kesempatan, dari harian hingga semi-formal.',
+      spec: [['Bahan','Satin Polos'],['Ukuran','110 x 110 cm'],['Finishing','Neci 4 sisi'],['Cocok untuk','Harian, semi-formal']]
+    },
+    {
+      id: 4, img: 'Hijab SegiEmpat Voal Motif Bunga Warna Abu Biru.jpg', name: 'Hijab SegiEmpat Voal Motif Bunga Warna Abu Biru',
+      category: 'Voal', price: 65000, oldPrice: 85000, rating: 4.6, reviews: 83, badge: 'sale',
+      desc: 'Hijab Segi Empat Voal Motif Bunga dengan perpaduan warna abu dan biru yang cantik dan feminin. Bahan voal ultrafine yang tipis namun tidak nerawang memberikan kenyamanan maksimal.\n\nMotif bunga yang elegan cocok untuk tampilan kasual maupun semi-formal. Finishing lasercut membuat tepi hijab terlihat rapi dan premium.',
+      spec: [['Bahan','Voal Ultrafine'],['Ukuran','115 x 115 cm'],['Motif','Bunga Abu-Biru'],['Finishing','Lasercut']]
+    },
+    {
+      id: 5, img: 'hijab segiempat voal motif bunga.jpeg', name: 'Hijab SegiEmpat Voal Motif Bunga',
+      category: 'Voal', price: 62000, oldPrice: null, rating: 4.6, reviews: 94, badge: 'new',
+      desc: 'Hijab Segi Empat Voal Motif Bunga hadir dengan desain motif bunga yang segar dan modern. Bahan voal yang ringan dan breathable sangat cocok untuk iklim tropis Indonesia.\n\nTampilan motif bunga yang detail dan berwarna-warni membuat hijab ini menjadi pilihan favorit untuk tampilan kasual yang tetap stylish.',
+      spec: [['Bahan','Voal Premium'],['Ukuran','115 x 115 cm'],['Motif','Bunga Warna-warni'],['Finishing','Lasercut']]
+    },
+    {
+      id: 6, img: 'Hijab Segitiga Instan Jersey Premium.jpeg', name: 'Hijab Segitiga Instan Jersey Premium',
+      category: 'Instan', price: 45000, oldPrice: 60000, rating: 4.4, reviews: 112, badge: 'sale',
+      desc: 'Hijab Segitiga Instan Jersey Premium dirancang untuk kamu yang aktif dan ingin tampil praktis tanpa ribet. Cukup pakai langsung, tanpa perlu jarum pentul.\n\nBahan jersey yang stretch dan breathable membuat hijab ini nyaman dipakai seharian, cocok untuk olahraga ringan, aktivitas kampus, maupun kerja.',
+      spec: [['Bahan','Jersey Premium'],['Tipe','Segitiga Instan'],['Penutup','Menutup dada'],['Cocok untuk','Harian, olahraga, kampus']]
+    },
+    {
+      id: 7, img: 'Hijab Voal Motif Segi Empoat Lasercut Elegan.jpeg', name: 'Hijab Voal Motif Segi Empat Lasercut Elegan',
+      category: 'Voal', price: 89000, oldPrice: 115000, rating: 4.8, reviews: 178, badge: 'sale',
+      desc: 'Hijab Voal Motif Segi Empat Lasercut Elegan menghadirkan keindahan motif yang dipadukan dengan teknik lasercut presisi tinggi. Setiap detail tepi hijab dipotong dengan laser sehingga menghasilkan pola yang indah dan rapi.\n\nBahan voal premium yang lembut dan tidak nerawang menjadikan hijab ini pilihan sempurna untuk acara spesial maupun tampilan sehari-hari yang elegan.',
+      spec: [['Bahan','Voal Premium'],['Ukuran','115 x 115 cm'],['Teknik','Lasercut Presisi'],['Cocok untuk','Kondangan, formal, harian']]
+    },
+    {
+      id: 8, img: 'jilbab bergo jersey premium.jpeg', name: 'Jilbab Bergo Jersey Premium',
+      category: 'Instan', price: 72000, oldPrice: 89000, rating: 4.5, reviews: 143, badge: 'sale',
+      desc: 'Jilbab Bergo Jersey Premium adalah solusi hijab instan yang nyaman dan praktis. Desain bergo memudahkan pemakaian tanpa perlu styling panjang, cukup pakai dan langsung tampil rapi.\n\nBahan jersey premium yang lembut, tidak panas, dan menutup dada dengan sempurna. Cocok untuk aktivitas sehari-hari, bekerja, maupun ibadah.',
+      spec: [['Bahan','Jersey Premium'],['Tipe','Bergo / Instan'],['Penutup','Menutup dada'],['Cocok untuk','Harian, kerja, ibadah']]
+    },
+    {
+      id: 9, img: 'Jilbab Tali.jpg', name: 'Jilbab Tali',
+      category: 'Instan', price: 35000, oldPrice: 49000, rating: 4.3, reviews: 67, badge: 'sale',
+      desc: 'Jilbab Tali hadir dengan desain unik yang dilengkapi tali untuk memudahkan pengaturan dan memastikan hijab tetap rapi sepanjang hari. Sangat praktis dan tidak mudah bergeser.\n\nCocok untuk kamu yang aktif bergerak dan membutuhkan hijab yang aman dan nyaman. Bahan yang ringan membuat pemakaian terasa bebas.',
+      spec: [['Bahan','Jersey / Kaos'],['Tipe','Instan Tali'],['Keunggulan','Anti geser, praktis'],['Cocok untuk','Aktivitas aktif, harian']]
+    },
+    {
+      id: 10, img: 'Kerudung Instan Kaos Antem.jpeg', name: 'Kerudung Instan Kaos Antem',
+      category: 'Instan', price: 42000, oldPrice: null, rating: 4.4, reviews: 88, badge: 'new',
+      desc: 'Kerudung Instan Kaos Antem (Anti Tembus) hadir dengan teknologi bahan kaos yang tidak nerawang sama sekali. Sangat cocok untuk kamu yang ingin tampil simpel namun tetap syar\'i.\n\nBahan kaos yang lembut dan menyerap keringat membuat kerudung ini sangat nyaman dipakai di cuaca panas. Desain instan memudahkan pemakaian sehari-hari.',
+      spec: [['Bahan','Kaos Anti Tembus'],['Tipe','Instan / Langsung'],['Keunggulan','Tidak nerawang, adem'],['Cocok untuk','Harian, cuaca panas']]
+    },
+    {
+      id: 11, img: 'Kerudung Pashmina Siamond Model.jpg', name: 'Kerudung Pashmina Siamond Model',
+      category: 'Pashmina', price: 95000, oldPrice: 119000, rating: 4.7, reviews: 195, badge: 'sale',
+      desc: 'Kerudung Pashmina Diamond Model menghadirkan tampilan mewah dengan tekstur diamond yang berkilau elegan. Bahan pashmina premium yang lembut dan jatuh sempurna memberikan kesan anggun dan berkelas.\n\nSangat cocok untuk acara formal, kondangan, wisuda, atau tampilan sehari-hari yang ingin terlihat lebih istimewa.',
+      spec: [['Bahan','Pashmina Diamond'],['Ukuran','200 x 75 cm'],['Tekstur','Diamond / Berkilau'],['Cocok untuk','Formal, kondangan, wisuda']]
+    },
+    {
+      id: 12, img: 'Kerudung Segi Empat Katun.webp', name: 'Kerudung Segi Empat Katun',
+      category: 'Segi Empat', price: 32000, oldPrice: 45000, rating: 4.6, reviews: 132, badge: 'sale',
+      desc: 'Kerudung Segi Empat Katun adalah pilihan klasik yang tidak pernah salah. Bahan katun yang adem, menyerap keringat, dan ramah di kulit menjadikannya pilihan terbaik untuk pemakaian harian.\n\nTekstur katun yang tidak licin memudahkan styling dan membuat hijab tetap rapi sepanjang hari. Sangat cocok untuk iklim tropis.',
+      spec: [['Bahan','Katun Premium'],['Ukuran','110 x 110 cm'],['Keunggulan','Adem, menyerap keringat'],['Cocok untuk','Harian, sekolah, kampus']]
+    },
+    {
+      id: 13, img: 'Pashmina Wolfis Plain Premium.jpeg', name: 'Pashmina Wolfis Plain Premium',
+      category: 'Pashmina', price: 85000, oldPrice: 109000, rating: 4.8, reviews: 309, badge: 'sale',
+      desc: 'Pashmina Wolfis Plain Premium terbuat dari bahan wolfis berkualitas tinggi yang dikenal lembut, tebal, dan tidak mudah kusut. Bahan wolfis memberikan tampilan yang rapi dan elegan tanpa perlu banyak styling.\n\nJatuhnya bahan yang sempurna membuat pashmina ini sangat mudah dibentuk. Cocok untuk berbagai kesempatan dari harian hingga formal.',
+      spec: [['Bahan','Wolfis Premium'],['Ukuran','200 x 75 cm'],['Keunggulan','Tidak kusut, jatuh sempurna'],['Cocok untuk','Harian, formal, kondangan']]
+    },
+    {
+      id: 14, img: 'Voal Syari.jpeg', name: 'Voal Syari',
+      category: 'Voal', price: 99000, oldPrice: 135000, rating: 5.0, reviews: 421, badge: 'sale',
+      desc: 'Voal Syari hadir dalam ukuran jumbo 130x130 cm yang memastikan penutupan sempurna dan syar\'i. Bahan voal ultrafine premium yang ringan namun tidak nerawang memberikan kenyamanan sepanjang hari.\n\nFinishing lasercut yang presisi menghasilkan tepi yang rapi dan indah. Pilihan terbaik untuk kamu yang mengutamakan kesyar\'ian tanpa mengorbankan penampilan.',
+      spec: [['Bahan','Voal Ultrafine Premium'],['Ukuran','130 x 130 cm (Jumbo)'],['Finishing','Lasercut'],['Cocok untuk','Syar\'i, harian, formal']]
+    },
+  ];
+
+  let cart = [];
+  let wishlist = new Set();
+  let displayedProducts = [...products];
+
+  const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
+  const stars = r => '★'.repeat(Math.floor(r)) + (r % 1 >= 0.5 ? '½' : '') + '☆'.repeat(5 - Math.ceil(r));
+
+  // ── AUTH ──
+  let currentUser = null;
+
+  function openModal(tab = 'masuk') {
+    switchTab(tab);
+    document.getElementById('modalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function switchTab(tab) {
+    document.getElementById('tabMasuk').classList.toggle('active', tab === 'masuk');
+    document.getElementById('tabDaftar').classList.toggle('active', tab === 'daftar');
+    document.getElementById('formMasuk').classList.toggle('active', tab === 'masuk');
+    document.getElementById('formDaftar').classList.toggle('active', tab === 'daftar');
+    document.getElementById('modalTitle').textContent = tab === 'masuk' ? 'Masuk' : 'Buat Akun';
+    clearErrors();
+  }
+  function clearErrors() {
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+    document.querySelectorAll('.form-group input').forEach(el => el.classList.remove('error'));
+    // Reset pesan error login ke default
+    document.getElementById('loginEmailErr').textContent = 'Email atau username tidak valid';
+    document.getElementById('loginPassErr').textContent = 'Kata sandi minimal 6 karakter';
+  }
+  function showErr(id, inputId) {
+    document.getElementById(id).classList.add('show');
+    if (inputId) document.getElementById(inputId).classList.add('error');
+  }
+
+  function handleMasuk(e) {
+    e.preventDefault();
+    clearErrors();
+    const input = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    let ok = true;
+    if (!input) { showErr('loginEmailErr','loginEmail'); ok = false; }
+    if (pass.length < 6) { showErr('loginPassErr','loginPass'); ok = false; }
+    if (!ok) return;
+
+    // Cek apakah input adalah email atau username
+    const isEmail = input.includes('@');
+    let matchedUser = null;
+    if (isEmail) {
+      matchedUser = registeredUsers.find(u => u.email === input && u.password === pass);
+    } else {
+      matchedUser = registeredUsers.find(u => u.username === input && u.password === pass);
+    }
+
+    if (matchedUser) {
+      loginUser({ name: matchedUser.name, email: matchedUser.email, username: matchedUser.username });
+    } else {
+      // Cek apakah akun ada tapi password salah
+      const accountExists = isEmail
+        ? registeredUsers.find(u => u.email === input)
+        : registeredUsers.find(u => u.username === input);
+
+      if (accountExists) {
+        showErr('loginPassErr', 'loginPass');
+        document.getElementById('loginPassErr').textContent = 'Kata sandi salah';
+      } else {
+        showErr('loginEmailErr', 'loginEmail');
+        document.getElementById('loginEmailErr').textContent = 'Akun tidak ditemukan. Silakan daftar terlebih dahulu';
+      }
+    }
+  }
+
+  // ── REGISTERED USERS (in-memory) ──
+  let registeredUsers = [];
+
+  function handleDaftar(e) {
+    e.preventDefault();
+    clearErrors();
+    const name     = document.getElementById('regName').value.trim();
+    const username = document.getElementById('regUsername').value.trim();
+    const email    = document.getElementById('regEmail').value.trim();
+    const pass     = document.getElementById('regPass').value;
+    const pass2    = document.getElementById('regPass2').value;
+    const agree    = document.getElementById('regAgree').checked;
+    let ok = true;
+    if (!name)                                  { showErr('regNameErr','regName');       ok = false; }
+    if (!username)                              { showErr('regUsernameErr','regUsername'); ok = false; }
+    if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('regEmailErr','regEmail');     ok = false; }
+    if (pass.length < 6)                        { showErr('regPassErr','regPass');       ok = false; }
+    if (pass !== pass2)                         { showErr('regPass2Err','regPass2');     ok = false; }
+    if (!agree)                                 { showErr('regAgreeErr');                ok = false; }
+    if (!ok) return;
+    // Simpan ke registeredUsers
+    registeredUsers.push({ name, username, email, password: pass });
+    loginUser({ name, email, username });
+  }
+
+  function loginUser(user) {
+    currentUser = user;
+    closeModal();
+    // Update navbar
+    document.getElementById('authButtons').style.display = 'none';
+    const um = document.getElementById('userMenu');
+    um.classList.add('show');
+    document.getElementById('userAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('ddName').textContent  = user.name;
+    document.getElementById('ddEmail').textContent = user.email;
+    showToast(`Selamat datang, ${user.name}! 👋`);
+  }
+
+  // Tombol Masuk & Daftar di navbar
+  document.getElementById('btnMasuk').addEventListener('click', () => openModal('masuk'));
+  document.getElementById('btnDaftar').addEventListener('click', () => openModal('daftar'));
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  // User dropdown toggle
+  document.getElementById('userAvatar').addEventListener('click', () => {
+    document.getElementById('userDropdown').classList.toggle('open');
+  });
+  document.addEventListener('click', e => {
+    const menu = document.getElementById('userMenu');
+    if (!menu.contains(e.target)) {
+      document.getElementById('userDropdown').classList.remove('open');
+    }
+  });
+
+  // Logout
+  document.getElementById('btnLogout').addEventListener('click', () => {
+    currentUser = null;
+    document.getElementById('userMenu').classList.remove('show');
+    document.getElementById('authButtons').style.display = 'flex';
+    document.getElementById('userDropdown').classList.remove('open');
+    showToast('Berhasil keluar. Sampai jumpa! 👋');
+  });
+
+  // ── RENDER PRODUCTS ──
+  function renderProducts(list) {
+    const grid = document.getElementById('productGrid');
+    document.getElementById('productCount').textContent = list.length + ' produk';
+    grid.innerHTML = list.map(p => `
+      <div class="card" onclick="openProductModal(${p.id})" style="cursor:pointer;">
+        <div class="card-img">
+          <img src="${p.img}" alt="${p.name}" loading="lazy" />
+          ${p.badge === 'new'  ? '<span class="badge-new">NEW</span>'  : ''}
+          ${p.badge === 'sale' ? '<span class="badge-sale">SALE</span>' : ''}
+          <button class="wishlist-btn ${wishlist.has(p.id) ? 'active' : ''}"
+            onclick="event.stopPropagation();toggleWishlist(${p.id}, this)">
+            ${wishlist.has(p.id) ? '❤️' : '🤍'}
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="card-category">${p.category}</div>
+          <div class="card-name">${p.name}</div>
+          <div class="card-rating">
+            ${stars(p.rating)}
+            <span>(${p.reviews})</span>
+          </div>
+          <div class="card-price">
+            <div>
+              <div class="price-main">${fmt(p.price)}</div>
+              ${p.oldPrice ? `<div class="price-old">${fmt(p.oldPrice)}</div>` : ''}
+            </div>
+            <button class="add-to-cart" onclick="event.stopPropagation();addToCart(${p.id})">+ Keranjang</button>
+          </div>
+          <button class="add-to-cart" style="width:100%;margin-top:8px;background:#2a9d8f;" onclick="event.stopPropagation();buyNow(${p.id})">⚡ Beli Langsung</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── WISHLIST ──
+  function toggleWishlist(id, btn) {
+    if (wishlist.has(id)) {
+      wishlist.delete(id);
+      btn.classList.remove('active');
+      btn.textContent = '🤍';
+      showToast('Dihapus dari wishlist');
+    } else {
+      wishlist.add(id);
+      btn.classList.add('active');
+      btn.textContent = '❤️';
+      showToast('Ditambahkan ke wishlist ❤️');
+    }
+  }
+
+  // ── CART ──
+  function addToCart(id) {
+    if (!currentUser) {
+      showToast('Silakan login atau daftar dulu untuk membeli! 🔐');
+      openModal('masuk');
+      return;
+    }
+    const p = products.find(x => x.id === id);
+    const existing = cart.find(x => x.id === id);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ ...p, qty: 1 });
+    }
+    updateCart();
+    showToast(`${p.name} ditambahkan ke keranjang 🛒`);
+  }
+
+  function updateCart() {
+    const badge = document.getElementById('cartBadge');
+    const totalQty = cart.reduce((s, x) => s + x.qty, 0);
+    badge.textContent = totalQty;
+
+    const itemsEl = document.getElementById('cartItems');
+    if (cart.length === 0) {
+      itemsEl.innerHTML = `<div class="cart-empty"><div class="icon">🛍️</div><p>Keranjang masih kosong</p></div>`;
+    } else {
+      itemsEl.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img src="${item.img}" alt="${item.name}" />
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">${fmt(item.price)}</div>
+            <div class="cart-item-qty">
+              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+              <span class="qty-num">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${item.id})">🗑️</button>
+        </div>
+      `).join('');
+    }
+
+    const total = cart.reduce((s, x) => s + x.price * x.qty, 0);
+    document.getElementById('cartTotal').textContent = fmt(total);
+  }
+
+  function changeQty(id, delta) {
+    const item = cart.find(x => x.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) removeFromCart(id);
+    else updateCart();
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    updateCart();
+  }
+
+  // ── CART SIDEBAR ──
+  function openCart() {
+    document.getElementById('cartSidebar').classList.add('open');
+    document.getElementById('cartOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCart() {
+    document.getElementById('cartSidebar').classList.remove('open');
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cartBtn').addEventListener('click', () => {
+    if (!currentUser) {
+      showToast('Silakan login atau daftar dulu! 🔐');
+      openModal('masuk');
+      return;
+    }
+    openCart();
+  });
+  document.getElementById('cartClose').addEventListener('click', closeCart);
+  document.getElementById('cartOverlay').addEventListener('click', closeCart);
+
+  document.getElementById('checkoutBtn').addEventListener('click', () => {
+    if (!currentUser) {
+      showToast('Silakan login atau daftar dulu untuk checkout! 🔐');
+      closeCart();
+      openModal('masuk');
+      return;
+    }
+    if (cart.length === 0) { showToast('Keranjang masih kosong!'); return; }
+    closeCart();
+    openCheckoutModal('cart');
+  });
+
+  let activeCategory = 'semua';
+
+  function filterCategory(cat, btn) {
+    activeCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    displayedProducts = products.filter(p => {
+      const matchCat  = activeCategory === 'semua' || p.category === activeCategory;
+      const matchSearch = p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+      return matchCat && matchSearch;
+    });
+    renderProducts(displayedProducts);
+  }
+
+  // ── SEARCH ──
+  document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+  // ── SORT ──
+  document.getElementById('sortSelect').addEventListener('change', function () {
+    const val = this.value;
+    let sorted = [...displayedProducts];
+    if (val === 'price-asc')  sorted.sort((a, b) => a.price - b.price);
+    if (val === 'price-desc') sorted.sort((a, b) => b.price - a.price);
+    if (val === 'name-asc')   sorted.sort((a, b) => a.name.localeCompare(b.name));
+    renderProducts(sorted);
+  });
+
+  // ── TOAST ──
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── SIDEBAR ──
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('hamburgerBtn').addEventListener('click', openSidebar);
+  document.getElementById('sidebarClose').addEventListener('click', closeSidebar);
+  document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function filterCategoryByName(cat) {
+    const btns = document.querySelectorAll('.cat-btn');
+    let target = null;
+    btns.forEach(b => {
+      b.classList.remove('active');
+      if (b.textContent.trim() === cat) target = b;
+    });
+    if (target) {
+      target.classList.add('active');
+      activeCategory = cat;
+      applyFilters();
+      window.scrollTo({ top: document.getElementById('productGrid').offsetTop - 80, behavior: 'smooth' });
+    }
+  }
+
+  // ── PAGE MODALS ──
+  const pageModalMap = {
+    tentang:   'modalTentang',
+    promo:     'modalPromo',
+    panduan:   'modalPanduan',
+    faq:       'modalFaq',
+    kontak:    'modalKontak',
+    kebijakan: 'modalKebijakan',
+  };
+
+  function openPageModal(key) {
+    const id = pageModalMap[key];
+    if (!id) return;
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePageModal(key) {
+    const id = pageModalMap[key];
+    if (!id) return;
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Tutup modal halaman saat klik overlay
+  Object.values(pageModalMap).forEach(id => {
+    document.getElementById(id).addEventListener('click', function(e) {
+      if (e.target === this) closePageModal(Object.keys(pageModalMap).find(k => pageModalMap[k] === id));
+    });
+  });
+
+  // ── PRODUCT MODAL ──
+  let userReviews = {}; // { productId: [{name, rating, text, date}] }
+  let selectedStar = 0;
+  let currentProductId = null;
+
+  const sampleReviews = {
+    1: [{name:'Siti R.', rating:5, text:'Bahannya lembut banget, jatuhnya bagus. Warnanya juga sesuai foto!', date:'2 hari lalu'},
+        {name:'Dewi A.', rating:4, text:'Nyaman dipakai seharian, tidak panas. Recommended!', date:'1 minggu lalu'}],
+    2: [{name:'Rina M.', rating:5, text:'Kilap satinnya cantik banget, cocok buat kondangan. Puas!', date:'3 hari lalu'},
+        {name:'Fatimah', rating:5, text:'Kualitas premium, harga terjangkau. Sudah beli 3 warna!', date:'2 minggu lalu'}],
+    3: [{name:'Ayu S.', rating:4, text:'Simple tapi tetap elegan. Bahan tidak licin, mudah dipakai.', date:'5 hari lalu'}],
+    4: [{name:'Nisa K.', rating:5, text:'Motif bunganya cantik, warna abu-birunya unik. Suka banget!', date:'1 minggu lalu'},
+        {name:'Laila', rating:4, text:'Voalnya tipis tapi tidak nerawang. Adem dipakai.', date:'3 minggu lalu'}],
+    5: [{name:'Hana P.', rating:5, text:'Motifnya lucu dan warnanya cerah. Cocok buat tampilan kasual.', date:'4 hari lalu'}],
+    6: [{name:'Mira T.', rating:4, text:'Praktis banget, langsung pakai. Cocok buat yang aktif.', date:'1 minggu lalu'},
+        {name:'Zahra', rating:5, text:'Bahan jersey-nya adem dan stretch. Tidak geser seharian!', date:'2 minggu lalu'}],
+    7: [{name:'Indah W.', rating:5, text:'Lasercutnya rapi banget, motifnya elegan. Worth it!', date:'2 hari lalu'},
+        {name:'Nurul', rating:5, text:'Sudah beli 2x, kualitasnya konsisten. Sangat puas!', date:'1 minggu lalu'}],
+    8: [{name:'Rini S.', rating:5, text:'Bergo paling nyaman yang pernah saya pakai. Bahan premium!', date:'3 hari lalu'},
+        {name:'Dina F.', rating:4, text:'Praktis dan rapi. Cocok buat kerja sehari-hari.', date:'2 minggu lalu'}],
+    9: [{name:'Yuni A.', rating:4, text:'Talinya membantu banget biar tidak geser. Suka!', date:'1 minggu lalu'}],
+    10:[{name:'Mega R.', rating:5, text:'Bahan kaosnya adem dan tidak nerawang sama sekali. Mantap!', date:'5 hari lalu'},
+        {name:'Putri', rating:4, text:'Nyaman dipakai di cuaca panas. Tidak bikin gerah.', date:'3 minggu lalu'}],
+    11:[{name:'Sari N.', rating:5, text:'Tekstur diamondnya cantik, kesan mewah tapi harga bersahabat!', date:'1 hari lalu'},
+        {name:'Wulan', rating:5, text:'Jatuhnya bagus banget, cocok buat kondangan. Puas!', date:'1 minggu lalu'}],
+    12:[{name:'Tari M.', rating:5, text:'Bahan katunnya adem banget, cocok buat harian. Recommended!', date:'4 hari lalu'},
+        {name:'Aisyah', rating:4, text:'Simpel dan nyaman. Harga murah kualitas oke.', date:'2 minggu lalu'}],
+    13:[{name:'Lina D.', rating:5, text:'Wolfisnya tebal dan tidak kusut. Jatuhnya sempurna!', date:'2 hari lalu'},
+        {name:'Rahma', rating:5, text:'Sudah langganan beli wolfis di sini. Kualitas terjaga!', date:'1 minggu lalu'}],
+    14:[{name:'Fitri A.', rating:5, text:'Ukurannya jumbo, menutup sempurna. Voalnya premium!', date:'1 hari lalu'},
+        {name:'Nadia', rating:5, text:'Terbaik! Lasercut rapi, bahan tidak nerawang. 5 bintang!', date:'3 hari lalu'},
+        {name:'Halimah', rating:5, text:'Sudah beli 5 warna, semua bagus. Favorit saya!', date:'1 minggu lalu'}],
+  };
+
+  function openProductModal(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    currentProductId = id;
+    selectedStar = 0;
+
+    document.getElementById('pmTitle').textContent = p.name;
+    document.getElementById('pmImg').src = p.img;
+    document.getElementById('pmImg').alt = p.name;
+    document.getElementById('pmCategory').textContent = p.category;
+    document.getElementById('pmPrice').textContent = fmt(p.price);
+    const oldEl = document.getElementById('pmOldPrice');
+    oldEl.textContent = p.oldPrice ? fmt(p.oldPrice) : '';
+    oldEl.style.display = p.oldPrice ? 'block' : 'none';
+    document.getElementById('pmRatingRow').innerHTML =
+      `<span style="color:#f4a261;font-size:1rem;">${stars(p.rating)}</span>
+       <span style="font-size:0.82rem;color:var(--muted);">${p.rating} (${p.reviews} ulasan)</span>`;
+    document.getElementById('pmDesc').textContent = p.desc;
+
+    // Spesifikasi
+    const specTable = document.getElementById('pmSpec');
+    specTable.innerHTML = p.spec.map(([k,v]) =>
+      `<tr>
+        <td style="padding:6px 10px 6px 0;color:var(--muted);width:40%;font-weight:600;">${k}</td>
+        <td style="padding:6px 0;">${v}</td>
+      </tr>`
+    ).join('');
+
+    // Tombol tambah keranjang
+    document.getElementById('pmAddCart').onclick = () => {
+      if (!currentUser) {
+        closeProductModal();
+        showToast('Silakan login atau daftar dulu untuk membeli! 🔐');
+        openModal('masuk');
+        return;
+      }
+      addToCart(id);
+    };
+
+    // Tombol beli langsung di modal produk
+    document.getElementById('pmBuyNow').onclick = () => {
+      if (!currentUser) {
+        closeProductModal();
+        showToast('Silakan login atau daftar dulu untuk membeli! 🔐');
+        openModal('masuk');
+        return;
+      }
+      closeProductModal();
+      buyNow(id);
+    };
+
+    // Reset form ulasan
+    document.getElementById('reviewName').value = '';
+    document.getElementById('reviewText').value = '';
+    updateStarPicker(0);
+
+    // Render ulasan
+    renderReviews(id);
+
+    document.getElementById('productModalOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Scroll modal ke atas
+    document.getElementById('productModalBox').scrollTop = 0;
+  }
+
+  function closeProductModal() {
+    document.getElementById('productModalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('productModalClose').addEventListener('click', closeProductModal);
+  document.getElementById('productModalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('productModalOverlay')) closeProductModal();
+  });
+
+  // Star picker
+  const starSpans = document.querySelectorAll('#starPicker span');
+  starSpans.forEach(s => {
+    s.addEventListener('mouseover', () => updateStarPicker(+s.dataset.v));
+    s.addEventListener('mouseout',  () => updateStarPicker(selectedStar));
+    s.addEventListener('click',     () => { selectedStar = +s.dataset.v; updateStarPicker(selectedStar); });
+  });
+
+  function updateStarPicker(val) {
+    starSpans.forEach(s => {
+      s.textContent = +s.dataset.v <= val ? '★' : '☆';
+      s.style.color  = +s.dataset.v <= val ? '#f4a261' : '#ccc';
+    });
+  }
+
+  function renderReviews(id) {
+    const all = [...(sampleReviews[id] || []), ...(userReviews[id] || [])];
+    const el = document.getElementById('pmReviewList');
+    if (all.length === 0) {
+      el.innerHTML = '<p style="font-size:0.85rem;color:var(--muted);text-align:center;padding:12px 0;">Belum ada ulasan. Jadilah yang pertama!</p>';
+      return;
+    }
+    el.innerHTML = all.map(r => `
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="background:var(--primary);color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;">${r.name.charAt(0)}</div>
+            <div>
+              <div style="font-weight:700;font-size:0.88rem;">${r.name}</div>
+              <div style="color:#f4a261;font-size:0.85rem;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:var(--muted);">${r.date}</div>
+        </div>
+        <p style="font-size:0.85rem;color:#444;margin:0;line-height:1.6;">${r.text}</p>
+      </div>
+    `).join('');
+  }
+
+  function submitReview() {
+    const name = document.getElementById('reviewName').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+    if (!name) { showToast('Masukkan nama kamu dulu!'); return; }
+    if (selectedStar === 0) { showToast('Pilih rating bintang dulu!'); return; }
+    if (!text) { showToast('Tulis komentar kamu dulu!'); return; }
+
+    if (!userReviews[currentProductId]) userReviews[currentProductId] = [];
+    userReviews[currentProductId].unshift({ name, rating: selectedStar, text, date: 'Baru saja' });
+
+    document.getElementById('reviewName').value = '';
+    document.getElementById('reviewText').value = '';
+    selectedStar = 0;
+    updateStarPicker(0);
+    renderReviews(currentProductId);
+    showToast('Ulasan berhasil dikirim! Terima kasih 🙏');
+  }
+
+  // ── DATA WILAYAH ──
+  const wilayahData = {
+    'Jawa': {
+      'DKI Jakarta': { cities: ['Jakarta Pusat:10110','Jakarta Utara:14110','Jakarta Barat:11110','Jakarta Selatan:12110','Jakarta Timur:13110'] },
+      'Jawa Barat': { cities: ['Bandung:40111','Bogor:16111','Bekasi:17111','Depok:16411','Cimahi:40511'] },
+      'Jawa Tengah': { cities: ['Semarang:50111','Solo:57111','Magelang:56111','Purwokerto:53111','Pekalongan:51111'] },
+      'DI Yogyakarta': { cities: ['Yogyakarta:55111','Sleman:55511','Bantul:55711','Gunungkidul:55811','Kulonprogo:55611'] },
+      'Jawa Timur': { cities: ['Surabaya:60111','Malang:65111','Sidoarjo:61211','Gresik:61111','Mojokerto:61311'] },
+      'Banten': { cities: ['Serang:42111','Tangerang:15111','Cilegon:42411','Tangerang Selatan:15311','Lebak:42311'] }
+    },
+    'Sumatera': {
+      'Sumatera Utara': { cities: ['Medan:20111','Binjai:20711','Pematangsiantar:21111','Tebing Tinggi:20611','Sibolga:22511'] },
+      'Sumatera Barat': { cities: ['Padang:25111','Bukittinggi:26111','Payakumbuh:26211','Solok:27311','Padang Panjang:27111'] },
+      'Riau': { cities: ['Pekanbaru:28111','Dumai:28811','Bengkalis:28711','Siak:28671','Kampar:28411'] },
+      'Sumatera Selatan': { cities: ['Palembang:30111','Lubuklinggau:31611','Prabumulih:31111','Pagar Alam:31511','Lahat:31411'] },
+      'Lampung': { cities: ['Bandar Lampung:35111','Metro:34111','Pringsewu:35373','Kotabumi:34511','Liwa:34814'] },
+      'Aceh': { cities: ['Banda Aceh:23111','Lhokseumawe:24311','Langsa:24411','Sabang:23511','Meulaboh:23611'] }
+    },
+    'Kalimantan': {
+      'Kalimantan Barat': { cities: ['Pontianak:78111','Singkawang:79111','Sambas:79411','Ketapang:78811','Sanggau:78511'] },
+      'Kalimantan Tengah': { cities: ['Palangka Raya:73111','Sampit:74311','Pangkalan Bun:74111','Muara Teweh:73811','Kuala Kapuas:73511'] },
+      'Kalimantan Selatan': { cities: ['Banjarmasin:70111','Banjarbaru:70711','Martapura:70611','Amuntai:71411','Kotabaru:72111'] },
+      'Kalimantan Timur': { cities: ['Samarinda:75111','Balikpapan:76111','Bontang:75311','Tenggarong:75511','Sangatta:75611'] }
+    },
+    'Sulawesi': {
+      'Sulawesi Utara': { cities: ['Manado:95111','Bitung:95511','Tomohon:95411','Kotamobagu:95711','Tondano:95611'] },
+      'Sulawesi Tengah': { cities: ['Palu:94111','Luwuk:94711','Poso:94611','Tolitoli:94511','Donggala:94341'] },
+      'Sulawesi Selatan': { cities: ['Makassar:90111','Parepare:91111','Palopo:91911','Bone:92711','Gowa:92111'] },
+      'Sulawesi Tenggara': { cities: ['Kendari:93111','Bau-Bau:93711','Kolaka:93511','Raha:93611','Unaaha:93411'] }
+    },
+    'Bali & Nusa Tenggara': {
+      'Bali': { cities: ['Denpasar:80111','Singaraja:81111','Tabanan:82111','Gianyar:80511','Klungkung:80711'] },
+      'NTB': { cities: ['Mataram:83111','Bima:84111','Sumbawa Besar:84311','Praya:83511','Dompu:84211'] },
+      'NTT': { cities: ['Kupang:85111','Ende:86311','Maumere:86111','Ruteng:86511','Labuan Bajo:86554'] }
+    },
+    'Maluku & Papua': {
+      'Maluku': { cities: ['Ambon:97111','Tual:97611','Masohi:97511','Namlea:97661','Saumlaki:97651'] },
+      'Papua': { cities: ['Jayapura:99111','Merauke:99611','Timika:98811','Nabire:98811','Biak:98111'] },
+      'Papua Barat': { cities: ['Manokwari:98311','Sorong:98411','Fakfak:98611','Kaimana:98651','Bintuni:98554'] }
+    }
+  };
+
+  // ── ONGKIR DATA ──
+  const kurirData = [
+    { id:'jne', name:'JNE', cod: true, services:[
+      { id:'reg', name:'Reguler', days:'2-5 hari' },
+      { id:'yes', name:'Express (YES)', days:'1-2 hari' },
+      { id:'oke', name:'Ekonomi (OKE)', days:'5-7 hari' }
+    ]},
+    { id:'jnt', name:'J&T Express', cod: true, services:[
+      { id:'reg', name:'Reguler', days:'2-5 hari' },
+      { id:'exp', name:'Express', days:'1-2 hari' },
+      { id:'eco', name:'Ekonomi', days:'5-7 hari' }
+    ]},
+    { id:'sicepat', name:'SiCepat', cod: true, services:[
+      { id:'reg', name:'Reguler (BEST)', days:'2-5 hari' },
+      { id:'exp', name:'Express (HALU)', days:'1-2 hari' }
+    ]},
+    { id:'anteraja', name:'Anteraja', cod: false, services:[
+      { id:'reg', name:'Reguler', days:'2-5 hari' },
+      { id:'exp', name:'Express', days:'1-2 hari' }
+    ]},
+    { id:'pos', name:'Pos Indonesia', cod: false, services:[
+      { id:'reg', name:'Reguler', days:'3-7 hari' },
+      { id:'eco', name:'Ekonomi', days:'7-14 hari' }
+    ]}
+  ];
+
+  function getOngkir(pulau, serviceType, subtotal) {
+    const isExpress = serviceType === 'exp' || serviceType === 'yes';
+    const isEkonomi = serviceType === 'eco' || serviceType === 'oke';
+    if (pulau === 'Jawa') {
+      if (!isExpress && subtotal >= 150000) return 0;
+      if (isExpress) return Math.floor(Math.random() * (25000 - 15000 + 1)) + 15000;
+      return Math.floor(Math.random() * (20000 - 12000 + 1)) + 12000;
+    }
+    const ranges = {
+      'Sumatera':            { reg: [18000,25000], exp: [35000,45000], eco: [15000,22000] },
+      'Kalimantan':          { reg: [22000,30000], exp: [40000,55000], eco: [18000,25000] },
+      'Sulawesi':            { reg: [25000,35000], exp: [45000,60000], eco: [20000,28000] },
+      'Bali & Nusa Tenggara':{ reg: [20000,28000], exp: [38000,50000], eco: [16000,22000] },
+      'Maluku & Papua':      { reg: [35000,50000], exp: [65000,85000], eco: [28000,40000] }
+    };
+    const r = ranges[pulau] || ranges['Sumatera'];
+    const key = isExpress ? 'exp' : isEkonomi ? 'eco' : 'reg';
+    const [min, max] = r[key];
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // ── CHECKOUT STATE ──
+  let checkoutItems = [];
+  let checkoutStep = 1;
+  let checkoutData = { address: {}, kurir: null, service: null, payment: null, ongkir: 0 };
+
+  function buyNow(id) {
+    if (!currentUser) {
+      showToast('Silakan login atau daftar dulu untuk membeli!');
+      openModal('masuk');
+      return;
+    }
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    openCheckoutModal('buynow', [{ ...p, qty: 1 }]);
+  }
+
+  function openCheckoutModal(source, items) {
+    if (source === 'cart') {
+      checkoutItems = cart.map(x => ({ ...x }));
+    } else {
+      checkoutItems = items || [];
+    }
+    checkoutStep = 1;
+    checkoutData = { address: {}, kurir: null, service: null, payment: null, ongkir: 0 };
+    document.getElementById('checkoutModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    renderCheckoutStep();
+  }
+
+  function closeCheckoutModal() {
+    document.getElementById('checkoutModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderCheckoutProgress() {
+    const steps = ['Pesanan','Alamat','Kurir','Bayar','Konfirmasi'];
+    const el = document.getElementById('checkoutProgress');
+    el.innerHTML = steps.map((s, i) => {
+      const n = i + 1;
+      const active = n === checkoutStep;
+      const done = n < checkoutStep;
+      return `<div style="display:flex;align-items:center;gap:4px;flex:1;">
+        <div style="width:24px;height:24px;border-radius:50%;background:${done?'#fff':active?'#fff':'rgba(255,255,255,0.3)'};color:${done||active?'var(--primary)':'#fff'};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0;">${done?'✓':n}</div>
+        <span style="font-size:0.7rem;color:${active?'#fff':'rgba(255,255,255,0.7)'};font-weight:${active?700:400};white-space:nowrap;">${s}</span>
+        ${n < 5 ? '<div style="flex:1;height:2px;background:rgba(255,255,255,0.3);margin:0 4px;"></div>' : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function renderCheckoutNav() {
+    const el = document.getElementById('checkoutNav');
+    const backBtn = checkoutStep > 1 ? `<button onclick="checkoutBack()" style="background:var(--bg);border:1.5px solid var(--border);color:var(--text);padding:12px 20px;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;">← Kembali</button>` : '<div></div>';
+    const nextLabel = checkoutStep === 5 ? '✅ Konfirmasi Pesanan' : 'Lanjut →';
+    const nextBtn = `<button onclick="checkoutNext()" style="background:var(--primary);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;">${nextLabel}</button>`;
+    el.innerHTML = backBtn + nextBtn;
+  }
+
+  function renderCheckoutStep() {
+    renderCheckoutProgress();
+    renderCheckoutNav();
+    const el = document.getElementById('checkoutContent');
+    if (checkoutStep === 1) el.innerHTML = renderStep1();
+    else if (checkoutStep === 2) el.innerHTML = renderStep2();
+    else if (checkoutStep === 3) el.innerHTML = renderStep3();
+    else if (checkoutStep === 4) el.innerHTML = renderStep4();
+    else if (checkoutStep === 5) el.innerHTML = renderStep5();
+    bindStepEvents();
+  }
+
+  function getSubtotal() {
+    return checkoutItems.reduce((s, x) => s + x.price * x.qty, 0);
+  }
+
+  function renderStep1() {
+    const subtotal = getSubtotal();
+    return `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">📦 Ringkasan Pesanan</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px;">
+      ${checkoutItems.map((item, idx) => `
+        <div style="display:flex;gap:12px;align-items:center;padding:12px;background:var(--bg);border-radius:10px;">
+          <img src="${item.img}" alt="${item.name}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" />
+          <div style="flex:1;">
+            <div style="font-size:0.88rem;font-weight:600;margin-bottom:4px;">${item.name}</div>
+            <div style="font-size:0.85rem;color:var(--primary);font-weight:700;">${fmt(item.price)}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button onclick="checkoutChangeQty(${idx},-1)" style="width:28px;height:28px;border:1.5px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;">−</button>
+            <span style="font-size:0.9rem;font-weight:700;min-width:24px;text-align:center;">${item.qty}</span>
+            <button onclick="checkoutChangeQty(${idx},1)" style="width:28px;height:28px;border:1.5px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;font-size:1rem;font-weight:700;">+</button>
+          </div>
+          <div style="font-size:0.9rem;font-weight:800;color:var(--primary);min-width:80px;text-align:right;">${fmt(item.price * item.qty)}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="border-top:2px solid var(--border);padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-weight:700;">Subtotal</span>
+      <span style="font-size:1.1rem;font-weight:800;color:var(--primary);">${fmt(subtotal)}</span>
+    </div>`;
+  }
+
+  function renderStep2() {
+    const d = checkoutData.address;
+    const pulauOptions = Object.keys(wilayahData).map(p => `<option value="${p}" ${d.pulau===p?'selected':''}>${p}</option>`).join('');
+    let provOptions = '<option value="">-- Pilih Provinsi --</option>';
+    let cityOptions = '<option value="">-- Pilih Kota/Kabupaten --</option>';
+    if (d.pulau && wilayahData[d.pulau]) {
+      provOptions = '<option value="">-- Pilih Provinsi --</option>' + Object.keys(wilayahData[d.pulau]).map(p => `<option value="${p}" ${d.provinsi===p?'selected':''}>${p}</option>`).join('');
+    }
+    if (d.pulau && d.provinsi && wilayahData[d.pulau] && wilayahData[d.pulau][d.provinsi]) {
+      cityOptions = '<option value="">-- Pilih Kota/Kabupaten --</option>' + wilayahData[d.pulau][d.provinsi].cities.map(c => {
+        const [name, kode] = c.split(':');
+        return `<option value="${name}|${kode}" ${d.kota===name?'selected':''}>${name}</option>`;
+      }).join('');
+    }
+    return `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">📍 Alamat Pengiriman</h3>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Nama Penerima</label>
+        <input type="text" id="addrName" value="${d.nama||''}" placeholder="Nama lengkap penerima" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;" />
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">No. HP</label>
+        <input type="tel" id="addrPhone" value="${d.hp||''}" placeholder="08xxxxxxxxxx" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;" />
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Pulau</label>
+        <select id="addrPulau" onchange="onPulauChange()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;cursor:pointer;">
+          <option value="">-- Pilih Pulau --</option>
+          ${pulauOptions}
+        </select>
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Provinsi</label>
+        <select id="addrProvinsi" onchange="onProvinsiChange()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;cursor:pointer;">
+          ${provOptions}
+        </select>
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Kota/Kabupaten</label>
+        <select id="addrKota" onchange="onKotaChange()" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;cursor:pointer;">
+          ${cityOptions}
+        </select>
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Kode Pos</label>
+        <input type="text" id="addrKodePos" value="${d.kodePos||''}" placeholder="Kode pos" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;" />
+      </div>
+      <div class="form-group">
+        <label style="font-size:0.85rem;font-weight:600;">Alamat Lengkap</label>
+        <textarea id="addrDetail" rows="3" placeholder="Jalan, RT/RW, Kelurahan, Kecamatan" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:0.9rem;outline:none;resize:vertical;font-family:inherit;">${d.detail||''}</textarea>
+      </div>
+    </div>`;
+  }
+
+  function renderStep3() {
+    const subtotal = getSubtotal();
+    const pulau = checkoutData.address.pulau || 'Jawa';
+    return `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">🚚 Pilih Kurir & Layanan</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      ${kurirData.map(k => `
+        <div style="border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
+          <div style="padding:12px 16px;background:var(--bg);font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:8px;">
+            🚚 ${k.name}
+            ${k.cod ? '<span style="background:#2a9d8f;color:#fff;font-size:0.65rem;padding:2px 8px;border-radius:10px;font-weight:700;">COD</span>' : ''}
+          </div>
+          ${k.services.map(s => {
+            const ongkir = getOngkir(pulau, s.id, subtotal);
+            const selected = checkoutData.kurir === k.id && checkoutData.service === s.id;
+            return `<label style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-top:1px solid var(--border);background:${selected?'#fff5f5':'#fff'};">
+              <input type="radio" name="kurirService" value="${k.id}|${s.id}|${ongkir}" ${selected?'checked':''} style="accent-color:var(--primary);" />
+              <div style="flex:1;">
+                <div style="font-size:0.88rem;font-weight:600;">${s.name}</div>
+                <div style="font-size:0.78rem;color:var(--muted);">Estimasi ${s.days}</div>
+              </div>
+              <div style="text-align:right;">
+                ${ongkir === 0 ? '<span style="background:#2a9d8f;color:#fff;font-size:0.75rem;padding:3px 10px;border-radius:10px;font-weight:700;">GRATIS</span>' : `<span style="font-weight:700;color:var(--primary);">${fmt(ongkir)}</span>`}
+              </div>
+            </label>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  function renderStep4() {
+    const kurirInfo = kurirData.find(k => k.id === checkoutData.kurir);
+    const supportCOD = kurirInfo ? kurirInfo.cod : false;
+    return `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">💳 Metode Pembayaran</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;" id="paymentOptions">
+      <label style="border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;${checkoutData.payment==='transfer'?'border-color:var(--primary);background:#fff5f5;':''}">
+        <input type="radio" name="payment" value="transfer" ${checkoutData.payment==='transfer'?'checked':''} style="accent-color:var(--primary);" onchange="onPaymentChange('transfer')" />
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">🏦 Transfer Bank</div>
+          <div style="font-size:0.78rem;color:var(--muted);">BCA, Mandiri, BNI, BRI</div>
+        </div>
+      </label>
+      ${checkoutData.payment==='transfer' ? `<div style="background:var(--bg);border-radius:10px;padding:14px;margin-top:-4px;">
+        <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;">Pilih Bank:</div>
+        ${[['BCA','1234567890'],['Mandiri','0987654321'],['BNI','1122334455'],['BRI','5566778899']].map(([bank,rek]) => `
+          <label style="display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;">
+            <input type="radio" name="bank" value="${bank}" ${checkoutData.bank===bank?'checked':''} style="accent-color:var(--primary);" onchange="checkoutData.bank='${bank}';checkoutData.rekening='${rek}'" />
+            <span style="font-size:0.85rem;font-weight:600;">${bank}</span>
+            <span style="font-size:0.82rem;color:var(--muted);">a.n. KerudungKu — ${rek}</span>
+          </label>
+        `).join('')}
+      </div>` : ''}
+      <label style="border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;${checkoutData.payment==='qris'?'border-color:var(--primary);background:#fff5f5;':''}">
+        <input type="radio" name="payment" value="qris" ${checkoutData.payment==='qris'?'checked':''} style="accent-color:var(--primary);" onchange="onPaymentChange('qris')" />
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">📱 QRIS</div>
+          <div style="font-size:0.78rem;color:var(--muted);">Scan QR dari semua e-wallet</div>
+        </div>
+      </label>
+      ${checkoutData.payment==='qris' ? `<div style="background:var(--bg);border-radius:10px;padding:16px;text-align:center;margin-top:-4px;">
+        <div style="width:160px;height:160px;background:#e0e0e0;border-radius:8px;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#666;border:2px dashed #aaa;">Scan QRIS</div>
+        <div style="font-size:0.78rem;color:var(--muted);">Scan QR code di atas menggunakan aplikasi e-wallet kamu</div>
+      </div>` : ''}
+      <label style="border:1.5px solid ${supportCOD?'var(--border)':'#ddd'};border-radius:12px;padding:14px 16px;cursor:${supportCOD?'pointer':'not-allowed'};display:flex;align-items:center;gap:12px;opacity:${supportCOD?1:0.5};${checkoutData.payment==='cod'?'border-color:var(--primary);background:#fff5f5;':''}">
+        <input type="radio" name="payment" value="cod" ${checkoutData.payment==='cod'?'checked':''} ${!supportCOD?'disabled':''} style="accent-color:var(--primary);" onchange="onPaymentChange('cod')" />
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.9rem;">💵 COD (Bayar di Tempat)</div>
+          <div style="font-size:0.78rem;color:var(--muted);">${supportCOD ? 'Bayar saat paket tiba' : 'Tidak tersedia untuk kurir yang dipilih'}</div>
+        </div>
+      </label>
+      <div id="codError" style="display:none;background:#fff5f5;border:1px solid var(--primary);border-radius:8px;padding:10px 14px;font-size:0.82rem;color:var(--primary);">⚠️ COD tidak tersedia untuk kurir yang dipilih. Silakan pilih JNE, J&T, atau SiCepat.</div>
+    </div>`;
+  }
+
+  function renderStep5() {
+    const subtotal = getSubtotal();
+    const total = subtotal + checkoutData.ongkir;
+    const d = checkoutData.address;
+    const kurirInfo = kurirData.find(k => k.id === checkoutData.kurir);
+    const serviceInfo = kurirInfo ? kurirInfo.services.find(s => s.id === checkoutData.service) : null;
+    const payLabel = checkoutData.payment === 'transfer' ? `Transfer Bank ${checkoutData.bank||''}` : checkoutData.payment === 'qris' ? 'QRIS' : 'COD (Bayar di Tempat)';
+    return `<h3 style="font-size:1rem;font-weight:800;margin-bottom:16px;">✅ Ringkasan Akhir</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="background:var(--bg);border-radius:10px;padding:14px;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Produk</div>
+        ${checkoutItems.map(item => `<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px;"><span>${item.name} x${item.qty}</span><span style="font-weight:700;">${fmt(item.price * item.qty)}</span></div>`).join('')}
+      </div>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Alamat Pengiriman</div>
+        <div style="font-size:0.85rem;font-weight:600;">${d.nama||'-'} · ${d.hp||'-'}</div>
+        <div style="font-size:0.82rem;color:var(--muted);margin-top:4px;">${d.detail||'-'}, ${d.kota||'-'}, ${d.provinsi||'-'}, ${d.pulau||'-'} ${d.kodePos||''}</div>
+      </div>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Pengiriman</div>
+        <div style="font-size:0.85rem;font-weight:600;">${kurirInfo?kurirInfo.name:'-'} — ${serviceInfo?serviceInfo.name:'-'}</div>
+        <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-top:4px;"><span>Ongkir</span><span style="font-weight:700;">${checkoutData.ongkir===0?'<span style="color:#2a9d8f;font-weight:700;">GRATIS</span>':fmt(checkoutData.ongkir)}</span></div>
+      </div>
+      <div style="background:var(--bg);border-radius:10px;padding:14px;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;">Pembayaran</div>
+        <div style="font-size:0.85rem;font-weight:600;">${payLabel}</div>
+      </div>
+      <div style="border-top:2px solid var(--border);padding-top:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:6px;"><span>Subtotal</span><span>${fmt(subtotal)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:10px;"><span>Ongkir</span><span>${checkoutData.ongkir===0?'GRATIS':fmt(checkoutData.ongkir)}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;"><span>Total</span><span style="color:var(--primary);">${fmt(total)}</span></div>
+      </div>
+    </div>`;
+  }
+
+  function bindStepEvents() {
+    if (checkoutStep === 3) {
+      document.querySelectorAll('input[name="kurirService"]').forEach(r => {
+        r.addEventListener('change', function() {
+          const [kurirId, serviceId, ongkirVal] = this.value.split('|');
+          checkoutData.kurir = kurirId;
+          checkoutData.service = serviceId;
+          checkoutData.ongkir = parseInt(ongkirVal);
+        });
+      });
+    }
+    if (checkoutStep === 4) {
+      document.querySelectorAll('input[name="payment"]').forEach(r => {
+        r.addEventListener('change', function() {
+          onPaymentChange(this.value);
+        });
+      });
+    }
+  }
+
+  function onPaymentChange(val) {
+    checkoutData.payment = val;
+    const kurirInfo = kurirData.find(k => k.id === checkoutData.kurir);
+    if (val === 'cod' && kurirInfo && !kurirInfo.cod) {
+      checkoutData.payment = null;
+      document.getElementById('codError').style.display = 'block';
+      document.querySelectorAll('input[name="payment"]').forEach(r => r.checked = false);
+      return;
+    }
+    renderCheckoutStep();
+  }
+
+  function onPulauChange() {
+    const pulau = document.getElementById('addrPulau').value;
+    checkoutData.address.pulau = pulau;
+    checkoutData.address.provinsi = '';
+    checkoutData.address.kota = '';
+    checkoutData.address.kodePos = '';
+    saveAddressFields();
+    renderCheckoutStep();
+  }
+
+  function onProvinsiChange() {
+    const prov = document.getElementById('addrProvinsi').value;
+    checkoutData.address.provinsi = prov;
+    checkoutData.address.kota = '';
+    checkoutData.address.kodePos = '';
+    saveAddressFields();
+    renderCheckoutStep();
+  }
+
+  function onKotaChange() {
+    const val = document.getElementById('addrKota').value;
+    if (val) {
+      const [name, kode] = val.split('|');
+      checkoutData.address.kota = name;
+      checkoutData.address.kodePos = kode;
+      saveAddressFields();
+      renderCheckoutStep();
+    }
+  }
+
+  function saveAddressFields() {
+    const nameEl = document.getElementById('addrName');
+    const phoneEl = document.getElementById('addrPhone');
+    const detailEl = document.getElementById('addrDetail');
+    const kodePosEl = document.getElementById('addrKodePos');
+    if (nameEl) checkoutData.address.nama = nameEl.value;
+    if (phoneEl) checkoutData.address.hp = phoneEl.value;
+    if (detailEl) checkoutData.address.detail = detailEl.value;
+    if (kodePosEl) checkoutData.address.kodePos = kodePosEl.value;
+  }
+
+  function checkoutChangeQty(idx, delta) {
+    checkoutItems[idx].qty += delta;
+    if (checkoutItems[idx].qty < 1) checkoutItems[idx].qty = 1;
+    renderCheckoutStep();
+  }
+
+  function checkoutBack() {
+    if (checkoutStep > 1) {
+      checkoutStep--;
+      renderCheckoutStep();
+    }
+  }
+
+  function checkoutNext() {
+    if (checkoutStep === 1) {
+      if (checkoutItems.length === 0) { showToast('Tidak ada produk!'); return; }
+      checkoutStep = 2;
+    } else if (checkoutStep === 2) {
+      saveAddressFields();
+      const d = checkoutData.address;
+      if (!d.nama) { showToast('Masukkan nama penerima!'); return; }
+      if (!d.hp) { showToast('Masukkan nomor HP!'); return; }
+      if (!d.pulau) { showToast('Pilih pulau!'); return; }
+      if (!d.provinsi) { showToast('Pilih provinsi!'); return; }
+      if (!d.kota) { showToast('Pilih kota/kabupaten!'); return; }
+      if (!d.detail) { showToast('Masukkan alamat lengkap!'); return; }
+      checkoutStep = 3;
+    } else if (checkoutStep === 3) {
+      if (!checkoutData.kurir) { showToast('Pilih kurir dan layanan!'); return; }
+      checkoutStep = 4;
+    } else if (checkoutStep === 4) {
+      if (!checkoutData.payment) { showToast('Pilih metode pembayaran!'); return; }
+      checkoutStep = 5;
+    } else if (checkoutStep === 5) {
+      confirmOrder();
+      return;
+    }
+    renderCheckoutStep();
+  }
+
+  function confirmOrder() {
+    const now = new Date();
+    const dateStr = now.getFullYear().toString() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0');
+    const rand = String(Math.floor(Math.random()*9000)+1000);
+    const orderNum = 'KK-' + dateStr + '-' + rand;
+    document.getElementById('orderNumber').textContent = orderNum;
+    closeCheckoutModal();
+    document.getElementById('orderSuccessModal').classList.add('open');
+    // Kosongkan keranjang jika checkout dari keranjang
+    cart = [];
+    updateCart();
+  }
+
+  function closeOrderSuccess() {
+    document.getElementById('orderSuccessModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── INIT ──
+  renderProducts(products);
+</script>
+
+</body>
+</html>
